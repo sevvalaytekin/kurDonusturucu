@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Xml; // XML işlemleri için şart
+using System.Globalization;
+using System.Xml;
 
 namespace TcmbConverter.Controllers
 {
@@ -10,23 +11,53 @@ namespace TcmbConverter.Controllers
             return View();
         }
 
-        // JavaScript'in (Fetch API) istek atacağı metod
         [HttpPost]
-        public IActionResult KurHesapla(DateTime? tarih, string kaynakDoviz, string hedefDoviz, decimal miktar)
+        public IActionResult KurHesapla(
+            DateTime? tarih,
+            string kaynakDoviz,
+            string hedefDoviz,
+            decimal miktar)
         {
             try
             {
-                DateTime hesaplamaTarihi = tarih ?? DateTime.Today;
+                DateTime simdi = DateTime.Now;
+                DateTime hesaplamaTarihi = tarih ?? simdi.Date;
 
-                // 1. Hafta Sonu Kontrolü (TCMB hafta sonu veri yayınlamaz)
-                if (hesaplamaTarihi.DayOfWeek == DayOfWeek.Saturday)
+                /*
+                 * TCMB, günün gösterge niteliğindeki döviz kurlarını
+                 * iş günlerinde saat 15:30'da yayımlar.
+                 *
+                 * Kullanıcı bugünü seçmişse ve saat henüz 15:30 olmamışsa
+                 * bir önceki günün kuru kullanılmalıdır.
+                 */
+                if (hesaplamaTarihi.Date == simdi.Date &&
+                    simdi.TimeOfDay < new TimeSpan(15, 30, 0))
+                {
                     hesaplamaTarihi = hesaplamaTarihi.AddDays(-1);
-                else if (hesaplamaTarihi.DayOfWeek == DayOfWeek.Sunday)
-                    hesaplamaTarihi = hesaplamaTarihi.AddDays(-2);
+                }
 
-                // 2. TCMB URL Oluşturma
+                /*
+                 * Tarih hafta sonuna denk geliyorsa cuma gününe dönülür.
+                 *
+                 * Pazartesi 15:30'dan önce:
+                 * Önce pazar gününe gidilir, ardından cuma gününe çekilir.
+                 */
+                if (hesaplamaTarihi.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    hesaplamaTarihi = hesaplamaTarihi.AddDays(-1);
+                }
+                else if (hesaplamaTarihi.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    hesaplamaTarihi = hesaplamaTarihi.AddDays(-2);
+                }
+
                 string url;
-                if (hesaplamaTarihi.Date == DateTime.Today)
+
+                /*
+                 * Bugünün yayımlanmış kuru isteniyorsa today.xml,
+                 * geçmiş tarih isteniyorsa arşiv adresi kullanılır.
+                 */
+                if (hesaplamaTarihi.Date == simdi.Date)
                 {
                     url = "https://www.tcmb.gov.tr/kurlar/today.xml";
                 }
@@ -34,30 +65,37 @@ namespace TcmbConverter.Controllers
                 {
                     string yilAy = hesaplamaTarihi.ToString("yyyyMM");
                     string gunAyYil = hesaplamaTarihi.ToString("ddMMyyyy");
-                    url = $"https://www.tcmb.gov.tr/kurlar/{yilAy}/{gunAyYil}.xml";
+
+                    url =
+                        $"https://www.tcmb.gov.tr/kurlar/{yilAy}/{gunAyYil}.xml";
                 }
 
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(url);
 
-                // 3. Kurları TL Cinsinden Elde Etme
-                decimal kaynakKurTL = GetKurInTL(xmlDoc, kaynakDoviz);
-                decimal hedefKurTL = GetKurInTL(xmlDoc, hedefDoviz);
+                decimal kaynakKurTL =
+                    GetKurInTL(xmlDoc, kaynakDoviz);
+
+                decimal hedefKurTL =
+                    GetKurInTL(xmlDoc, hedefDoviz);
 
                 if (kaynakKurTL == 0 || hedefKurTL == 0)
                 {
-                    return Json(new { success = false, message = "Seçilen döviz türlerinden biri TCMB bülteninde bulunamadı." });
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Seçilen döviz türlerinden biri TCMB bülteninde bulunamadı."
+                    });
                 }
 
-                // 4. Çapraz Dönüşüm Hesabı
                 decimal toplamTL = miktar * kaynakKurTL;
                 decimal nihaiSonuc = toplamTL / hedefKurTL;
                 decimal birimCaprazKur = kaynakKurTL / hedefKurTL;
 
-                // 5. Sonucu JavaScript'e JSON olarak döndürme
                 return Json(new
                 {
                     success = true,
+                    tarih = hesaplamaTarihi.ToString("dd.MM.yyyy"),
                     kaynak = kaynakDoviz,
                     hedef = hedefDoviz,
                     girilenMiktar = miktar,
@@ -67,20 +105,42 @@ namespace TcmbConverter.Controllers
             }
             catch (Exception)
             {
-                return Json(new { success = false, message = "Seçilen tarihe ait TCMB verisi alınamadı (Resmi tatil veya servis hatası olabilir)." });
+                return Json(new
+                {
+                    success = false,
+                    message = "Seçilen tarihe ait TCMB verisi alınamadı. Resmî tatil veya servis hatası olabilir."
+                });
             }
         }
 
-        // Yardımcı Metod: XML'den Kuru Okur
-        private decimal GetKurInTL(XmlDocument doc, string dovizKodu)
+        private decimal GetKurInTL(
+            XmlDocument doc,
+            string dovizKodu)
         {
-            if (dovizKodu == "TRY") return 1.0m; 
-
-            XmlNode? node = doc.SelectSingleNode($"//Currency[@Kod='{dovizKodu}']");
-            if (node != null)
+            if (dovizKodu == "TRY")
             {
-                string forexSelling = node["ForexSelling"]?.InnerText ?? "0";
-                return decimal.Parse(forexSelling, System.Globalization.CultureInfo.InvariantCulture);
+                return 1.0m;
+            }
+
+            XmlNode? node =
+                doc.SelectSingleNode(
+                    $"//Currency[@Kod='{dovizKodu}']");
+
+            if (node == null)
+            {
+                return 0m;
+            }
+
+            string forexSelling =
+                node["ForexSelling"]?.InnerText ?? "0";
+
+            if (decimal.TryParse(
+                    forexSelling,
+                    NumberStyles.Any,
+                    CultureInfo.InvariantCulture,
+                    out decimal kur))
+            {
+                return kur;
             }
 
             return 0m;
