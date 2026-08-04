@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "TCMB Kur Çevirici";
+}
+
+@{
+    ViewData["Title"] = "TCMB Kur Çevirici";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+                    <h4 class="card-title mb-0">TCMB Döviz Çevirici</h4>
+                    <span class="badge bg-light text-primary fw-bold">Canlı Veri</span>
+                </div>
+                
+                <div class="card-body p-4">
+                    
+                    <div id="alertBox" class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                        <div>
+                            TCMB gösterge kurlarını kullanarak çapraz dönüşüm yapabilirsiniz.
+                        </div>
+                    </div>
+
+                    <form id="kurForm" action="/Home/KurHesapla" method="post">
+                        
+                        <!-- Tarih Seçimi -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tarih Seçiniz</label>
+                            <input type="date" class="form-control" id="tarihInput" name="tarih" />
+                        </div>
+
+                        <!-- Çapraz Döviz Seçimleri -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Kaynak Para</label>
+                                <select class="form-select" name="kaynakDoviz">
+                                    <option value="USD">USD - ABD Doları</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - İngiliz Sterlini</option>
+                                    <option value="TRY">TRY - Türk Lirası</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Hedef Para</label>
+                                <select class="form-select" name="hedefDoviz">
+                                    <option value="TRY">TRY - Türk Lirası</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="USD" selected>USD - ABD Doları</option>
+                                    <option value="GBP">GBP - İngiliz Sterlini</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Miktar Girişi -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Miktar</label>
+                            <div class="input-group">
+                                <span class="input-group-text">💱</span>
+                                <input type="number" class="form-control" step="0.01" name="miktar" value="100" required />
+                            </div>
+                        </div>
+
+                        <!-- Gönder Butonu -->
+                        <div class="d-grid">
+                            <button type="submit" id="btnHesapla" class="btn btn-success btn-lg fw-bold">
+                                <span id="btnText">Hesapla</span>
+                                <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="card-footer text-muted text-center py-2">
+                    <small>Veriler Türkiye Cumhuriyet Merkez Bankası'ndan alınmaktadır.</small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/kur-hesapla.js"></script>
+}
+    
+            
+
