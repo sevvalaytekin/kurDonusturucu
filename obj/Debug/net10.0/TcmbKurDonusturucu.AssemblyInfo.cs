@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TcmbKurDonusturucu")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+88d59d6e8caddd7a23f91863c811bfeac2182910")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3025c51ff8f5c881d2be90929a249bd0960fa404")]
 [assembly: System.Reflection.AssemblyProductAttribute("TcmbKurDonusturucu")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TcmbKurDonusturucu")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
