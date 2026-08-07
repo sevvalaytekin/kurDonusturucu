@@ -1,19 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using TcmbKurDonusturucu.Data;
-using TcmbKurDonusturucu.Models;
+using TcmbKurDonusturucu.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controller ve View servislerini ekle
 builder.Services.AddControllersWithViews();
-
-// PostgreSQL (AppDbContext) veritabanı bağlantısını ekle
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpClient<ITcmbKurServisi, TcmbKurServisi>();
 
 var app = builder.Build();
 
-// HTTP request pipeline yapılandırması
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

@@ -1,25 +1,22 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace TcmbKurDonusturucu.Models
 {
-    [Table("DovizKurlari")]
     public class DovizKuru
     {
-        [Key]
-        public int Id { get; set; }
+        public string Kod { get; set; } = string.Empty;
+        public string Isim { get; set; } = string.Empty;
+        public decimal Birim { get; set; } = 1;
+        public decimal ForexAlis { get; set; }
+        public decimal ForexSatis { get; set; }
+    }
 
-        [Required]
-        public DateTime Tarih { get; set; }
-
-        [Required]
-        [MaxLength(10)]
-        public string DovizKodu { get; set; } = string.Empty;
-
-        [Column(TypeName = "numeric(18,4)")]
-        public decimal SatisKuru { get; set; }
-
-        public DateTime OlusturulmaTarihi { get; set; } = DateTime.UtcNow;
+    public class KurHesaplaSonucu
+    {
+        public bool Success { get; set; }
+        public string? Message { get; set; }
+        public string Kaynak { get; set; } = string.Empty;
+        public string Hedef { get; set; } = string.Empty;
+        public decimal BirimKur { get; set; }
+        public decimal GirilenMiktar { get; set; }
+        public decimal Sonuc { get; set; }
     }
 }

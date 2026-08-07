@@ -1,26 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
-using TcmbKurDonusturucu.Data;
 using TcmbKurDonusturucu.Models;
+using TcmbKurDonusturucu.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TcmbKurDonusturucu.Controllers
 {
-    public class KurHesaplaRequest
-    {
-        public DateTime? Tarih { get; set; }
-        public string KaynakDoviz { get; set; } = string.Empty;
-        public string HedefDoviz { get; set; } = string.Empty;
-        public decimal Miktar { get; set; }
-    }
-
     public class HomeController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly ITcmbKurServisi _kurServisi;
 
-        public HomeController(AppDbContext context)
+        public HomeController(ITcmbKurServisi kurServisi)
         {
-            _context = context;
+            _kurServisi = kurServisi;
         }
 
         public IActionResult Index()
@@ -29,132 +19,56 @@ namespace TcmbKurDonusturucu.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> KurHesapla([FromBody] KurHesaplaRequest model)
+        public async Task<IActionResult> KurHesapla(DateTime tarih, string kaynakDoviz, string hedefDoviz, decimal miktar)
         {
-            if (model == null)
-            {
-                return Json(new { success = false, message = "Geçersiz istek gövdesi." });
-            }
-
             try
             {
-                DateTime simdi = DateTime.Now;
-                DateTime hesaplamaTarihi = model.Tarih ?? simdi.Date;
+                var kurlar = await _kurServisi.KurlariGetirAsync(tarih);
 
-                // 15:30 kuralı: Bugünün tarihi girilmişse ve saat 15:30'dan önceyse dünkü kura çek
-                if (hesaplamaTarihi.Date == simdi.Date && simdi.TimeOfDay < new TimeSpan(15, 30, 0))
+                decimal kaynakTlKarsiligi = KurBul(kurlar, kaynakDoviz);
+                decimal hedefTlKarsiligi = KurBul(kurlar, hedefDoviz);
+
+                if (kaynakTlKarsiligi == 0 || hedefTlKarsiligi == 0)
                 {
-                    hesaplamaTarihi = hesaplamaTarihi.AddDays(-1);
-                }
-
-                // Hafta sonu kontrolü
-                if (hesaplamaTarihi.DayOfWeek == DayOfWeek.Saturday)
-                {
-                    hesaplamaTarihi = hesaplamaTarihi.AddDays(-1);
-                }
-                else if (hesaplamaTarihi.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    hesaplamaTarihi = hesaplamaTarihi.AddDays(-2);
-                }
-
-                DateTime hedefTarih = DateTime.SpecifyKind(hesaplamaTarihi.Date, DateTimeKind.Utc);
-
-                // 1. Önce Veritabanından Oku
-                var dbKurlari = await _context.DovizKurlari
-                    .Where(k => k.Tarih == hedefTarih)
-                    .ToDictionaryAsync(k => k.DovizKodu, k => k.SatisKuru);
-
-                // 2. Veritabanında yoksa TCMB'den Çek ve Kaydet
-                if (!dbKurlari.Any())
-                {
-                    dbKurlari = await TcmbKurlariniCekVeKaydetAsync(hedefTarih, simdi.Date);
-                }
-
-                dbKurlari["TRY"] = 1.0m;
-
-                if (!dbKurlari.TryGetValue(model.KaynakDoviz, out decimal kaynakKurTL) ||
-                    !dbKurlari.TryGetValue(model.HedefDoviz, out decimal hedefKurTL) ||
-                    kaynakKurTL == 0 || hedefKurTL == 0)
-                {
-                    return Json(new
+                    return Json(new KurHesaplaSonucu
                     {
-                        success = false,
-                        message = "Seçilen döviz türlerinden biri bültende bulunamadı."
+                        Success = false,
+                        Message = "Seçilen tarih için kur bilgisi bulunamadı."
                     });
                 }
 
-                decimal toplamTL = model.Miktar * kaynakKurTL;
-                decimal nihaiSonuc = toplamTL / hedefKurTL;
-                decimal birimCaprazKur = kaynakKurTL / hedefKurTL;
+                decimal birimKur = kaynakTlKarsiligi / hedefTlKarsiligi;
+                decimal sonuc = miktar * birimKur;
 
-                return Json(new
+                return Json(new KurHesaplaSonucu
                 {
-                    success = true,
-                    tarih = hedefTarih.ToString("dd.MM.yyyy"),
-                    kaynak = model.KaynakDoviz,
-                    hedef = model.HedefDoviz,
-                    girilenMiktar = model.Miktar,
-                    birimKur = birimCaprazKur,
-                    sonuc = nihaiSonuc
+                    Success = true,
+                    Kaynak = kaynakDoviz,
+                    Hedef = hedefDoviz,
+                    BirimKur = birimKur,
+                    GirilenMiktar = miktar,
+                    Sonuc = sonuc
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Json(new
+                return Json(new KurHesaplaSonucu
                 {
-                    success = false,
-                    message = "Seçilen tarihe ait TCMB verisi alınamadı."
+                    Success = false,
+                    Message = "Kur bilgisi alınırken bir hata oluştu: " + ex.Message
                 });
             }
         }
 
-        private async Task<Dictionary<string, decimal>> TcmbKurlariniCekVeKaydetAsync(DateTime hedefTarih, DateTime bugun)
+        private decimal KurBul(Dictionary<string, DovizKuru> kurlar, string kod)
         {
-            var kurlar = new Dictionary<string, decimal>();
-            string url;
+            if (kod.Equals("TRY", StringComparison.OrdinalIgnoreCase))
+                return 1m;
 
-            if (hedefTarih.Date == bugun)
-            {
-                url = "https://www.tcmb.gov.tr/kurlar/today.xml";
-            }
-            else
-            {
-                url = $"https://www.tcmb.gov.tr/kurlar/{hedefTarih:yyyyMM}/{hedefTarih:ddMMyyyy}.xml";
-            }
+            if (kurlar.TryGetValue(kod, out var kur))
+                return kur.ForexSatis / kur.Birim;
 
-            using (var httpClient = new HttpClient())
-            {
-                var xmlString = await httpClient.GetStringAsync(url);
-                var xdoc = XDocument.Parse(xmlString);
-
-                var eklenecekler = new List<DovizKuru>();
-
-                foreach (var element in xdoc.Descendants("Currency"))
-                {
-                    string kod = element.Attribute("CurrencyCode")?.Value ?? string.Empty;
-                    string satisStr = element.Element("ForexSelling")?.Value;
-
-                    if (!string.IsNullOrEmpty(kod) && !string.IsNullOrEmpty(satisStr) && decimal.TryParse(satisStr.Replace('.', ','), out decimal satisKuru))
-                    {
-                        kurlar[kod] = satisKuru;
-
-                        eklenecekler.Add(new DovizKuru
-                        {
-                            Tarih = hedefTarih,
-                            DovizKodu = kod,
-                            SatisKuru = satisKuru
-                        });
-                    }
-                }
-
-                if (eklenecekler.Any())
-                {
-                    await _context.DovizKurlari.AddRangeAsync(eklenecekler);
-                    await _context.SaveChangesAsync();
-                }
-            }
-
-            return kurlar;
+            return 0;
         }
     }
 }
