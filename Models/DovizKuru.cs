@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TcmbConverter.Models
+namespace TcmbKurDonusturucu.Models
 {
     [Table("DovizKurlari")]
     public class DovizKuru
