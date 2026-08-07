@@ -2,8 +2,11 @@ namespace TcmbKurDonusturucu.Models
 {
     public class DovizKuru
     {
+        public int Id { get; set; }
+
         public string Kod { get; set; } = string.Empty;
         public string Isim { get; set; } = string.Empty;
+        public DateTime Tarih { get; set; }
         public decimal Birim { get; set; } = 1;
         public decimal ForexAlis { get; set; }
         public decimal ForexSatis { get; set; }
