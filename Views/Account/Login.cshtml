@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white p-3">
+                    <h4 class="card-title mb-0">Giriş Yap</h4>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @foreach (var error in ViewData.ModelState.SelectMany(x => x.Value!.Errors))
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    <form method="post" action="/Account/Login">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kullanıcı Adı</label>
+                            <input type="text" class="form-control" name="kullaniciAdi" required autofocus />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Şifre</label>
+                            <input type="password" class="form-control" name="sifre" required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">Giriş Yap</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

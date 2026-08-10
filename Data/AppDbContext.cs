@@ -11,5 +11,13 @@ namespace TcmbKurDonusturucu.Data
         }
 
         public DbSet<DovizKuru> DovizKurlari { get; set; }
+        public DbSet<Kullanici> Kullanicilar { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Kullanici>()
+                .HasIndex(x => x.KullaniciAdi)
+                .IsUnique();
+        }
     }
 }
