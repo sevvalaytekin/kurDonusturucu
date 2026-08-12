@@ -188,3 +188,4 @@
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/TcmbKurDonusturucu.pdb
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/TcmbKurDonusturucu.genruntimeconfig.cache
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/ref/TcmbKurDonusturucu.dll
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.Google.dll

@@ -18,6 +18,10 @@ namespace TcmbKurDonusturucu.Data
             modelBuilder.Entity<Kullanici>()
                 .HasIndex(x => x.KullaniciAdi)
                 .IsUnique();
+
+            modelBuilder.Entity<Kullanici>()
+                .HasIndex(x => x.GoogleId)
+                .IsUnique();
         }
     }
 }

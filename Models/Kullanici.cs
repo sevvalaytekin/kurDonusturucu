@@ -5,6 +5,7 @@ namespace TcmbKurDonusturucu.Models
         public int Id { get; set; }
 
         public string KullaniciAdi { get; set; } = string.Empty;
-        public string SifreHash { get; set; } = string.Empty;
+        public string? SifreHash { get; set; }
+        public string? GoogleId { get; set; }
     }
 }

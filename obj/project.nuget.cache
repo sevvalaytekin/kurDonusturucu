@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "tEg+hy0AmP4=",
+  "dgSpecHash": "pfybmCq7scs=",
   "success": true,
   "projectFilePath": "/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.csproj",
   "expectedPackageFiles": [
     "/Users/sevvalaytekin/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
+    "/Users/sevvalaytekin/.nuget/packages/microsoft.aspnetcore.authentication.google/10.0.11/microsoft.aspnetcore.authentication.google.10.0.11.nupkg.sha512",
     "/Users/sevvalaytekin/.nuget/packages/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg.sha512",
     "/Users/sevvalaytekin/.nuget/packages/microsoft.codeanalysis.analyzers/3.11.0/microsoft.codeanalysis.analyzers.3.11.0.nupkg.sha512",
     "/Users/sevvalaytekin/.nuget/packages/microsoft.codeanalysis.common/5.0.0/microsoft.codeanalysis.common.5.0.0.nupkg.sha512",
