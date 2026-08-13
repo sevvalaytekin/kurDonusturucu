@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="TcmbKurDonusturucu.csproj" />
+  <Project Path="TcmbKurDonusturucu.Tests/TcmbKurDonusturucu.Tests.csproj" />
+</Solution>

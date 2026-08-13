@@ -25,10 +25,9 @@ namespace TcmbKurDonusturucu.Controllers
             {
                 var kurlar = await _kurServisi.KurlariGetirAsync(tarih);
 
-                decimal kaynakTlKarsiligi = KurBul(kurlar, kaynakDoviz);
-                decimal hedefTlKarsiligi = KurBul(kurlar, hedefDoviz);
+                var (basarili, birimKur, sonuc) = CaprazKurHesaplayici.Hesapla(kurlar, kaynakDoviz, hedefDoviz, miktar);
 
-                if (kaynakTlKarsiligi == 0 || hedefTlKarsiligi == 0)
+                if (!basarili)
                 {
                     return Json(new KurHesaplaSonucu
                     {
@@ -36,9 +35,6 @@ namespace TcmbKurDonusturucu.Controllers
                         Message = "Seçilen tarih için kur bilgisi bulunamadı."
                     });
                 }
-
-                decimal birimKur = kaynakTlKarsiligi / hedefTlKarsiligi;
-                decimal sonuc = miktar * birimKur;
 
                 return Json(new KurHesaplaSonucu
                 {
@@ -58,17 +54,6 @@ namespace TcmbKurDonusturucu.Controllers
                     Message = "Kur bilgisi alınırken bir hata oluştu: " + ex.Message
                 });
             }
-        }
-
-        private decimal KurBul(Dictionary<string, DovizKuru> kurlar, string kod)
-        {
-            if (kod.Equals("TRY", StringComparison.OrdinalIgnoreCase))
-                return 1m;
-
-            if (kurlar.TryGetValue(kod, out var kur))
-                return kur.ForexSatis / kur.Birim;
-
-            return 0;
         }
     }
 }

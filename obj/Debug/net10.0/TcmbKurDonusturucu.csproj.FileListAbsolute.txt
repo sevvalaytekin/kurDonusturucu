@@ -114,7 +114,6 @@
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/scopedcss/projectbundle/TcmbKurDonusturucu.bundle.scp.css
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/a1mbkwowks-{0}-b9sayid5wm-b9sayid5wm.gz
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/88lbpdedrf-{0}-61n19gt1b8-61n19gt1b8.gz
-/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/4rfa21b234-{0}-xaw6f4h93n-xaw6f4h93n.gz
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/736bdk6fm8-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/vqtl5o9suj-{0}-bqjiyaj88i-bqjiyaj88i.gz
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/svmrqurmwz-{0}-c2jlpeoesf-c2jlpeoesf.gz
@@ -189,3 +188,7 @@
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/TcmbKurDonusturucu.genruntimeconfig.cache
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/ref/TcmbKurDonusturucu.dll
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.Google.dll
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/bin/Debug/net10.0/package-lock.json
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/bin/Debug/net10.0/package.json
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/bin/Debug/net10.0/tsconfig.json
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/obj/Debug/net10.0/compressed/4rfa21b234-{0}-nehpru2h78-nehpru2h78.gz

@@ -43,6 +43,23 @@ namespace TcmbKurDonusturucu.Services
             var url = $"https://www.tcmb.gov.tr/kurlar/{tarih:yyyyMM}/{tarih:ddMMyyyy}.xml";
 
             var xmlString = await _httpClient.GetStringAsync(url);
+            var sonuc = XmlAyristir(xmlString, tarih);
+
+            // 5. TCMB'den ayrıştırılan kurları veritabanına ekle
+            foreach (var dovizKuru in sonuc.Values)
+            {
+                _dbContext.DovizKurlari.Add(dovizKuru);
+            }
+
+            // 6. Bütün kurları PostgreSQL'e kaydet
+            await _dbContext.SaveChangesAsync();
+
+            // 7. Kurları döndür
+            return sonuc;
+        }
+
+        internal static Dictionary<string, DovizKuru> XmlAyristir(string xmlString, DateTime tarih)
+        {
             var xdoc = XDocument.Parse(xmlString);
 
             var sonuc = new Dictionary<string, DovizKuru>(
@@ -85,15 +102,8 @@ namespace TcmbKurDonusturucu.Services
                 };
 
                 sonuc[kod] = dovizKuru;
-
-                // 5. TCMB'den aldığımız kuru veritabanına ekle
-                _dbContext.DovizKurlari.Add(dovizKuru);
             }
 
-            // 6. Bütün kurları PostgreSQL'e kaydet
-            await _dbContext.SaveChangesAsync();
-
-            // 7. Kurları döndür
             return sonuc;
         }
     }

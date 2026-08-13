@@ -1,0 +1,12 @@
+{
+  "name": "tcmbkurdonusturucu-frontend",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "typescript": "^5.9.0"
+  }
+}
