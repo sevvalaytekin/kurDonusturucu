@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml.Linq;
 using TcmbKurDonusturucu.Models;
 using TcmbKurDonusturucu.Data;
@@ -20,6 +21,10 @@ namespace TcmbKurDonusturucu.Services
 
         public async Task<Dictionary<string, DovizKuru>> KurlariGetirAsync(DateTime tarih)
         {
+            // Postgres "timestamptz" kolonu yalnızca Kind=Utc kabul ediyor;
+            // çağıranın gönderdiği DateTime'ın Kind'ı ne olursa olsun burada normalize ediyoruz.
+            tarih = DateTime.SpecifyKind(tarih.Date, DateTimeKind.Utc);
+
             // 1. Önce veritabanında bu tarihe ait kurlar var mı kontrol et
             var dbKurlari = await _dbContext.DovizKurlari
                 .Where(x => x.Tarih.Date == tarih.Date)
@@ -53,14 +58,20 @@ namespace TcmbKurDonusturucu.Services
 
                 decimal.TryParse(
                     currency.Element("Unit")?.Value,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
                     out var birim);
 
                 decimal.TryParse(
                     currency.Element("ForexBuying")?.Value,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
                     out var alis);
 
                 decimal.TryParse(
                     currency.Element("ForexSelling")?.Value,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
                     out var satis);
 
                 var dovizKuru = new DovizKuru
