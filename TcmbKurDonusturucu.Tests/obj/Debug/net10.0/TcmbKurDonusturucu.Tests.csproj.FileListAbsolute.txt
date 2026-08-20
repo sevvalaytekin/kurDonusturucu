@@ -111,3 +111,7 @@
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/obj/Debug/net10.0/TcmbKurDonusturucu.Tests.pdb
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/obj/Debug/net10.0/TcmbKurDonusturucu.Tests.genruntimeconfig.cache
 /Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/obj/Debug/net10.0/ref/TcmbKurDonusturucu.Tests.dll
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/bin/Debug/net10.0/package-lock.json
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/bin/Debug/net10.0/package.json
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/bin/Debug/net10.0/test-results/.last-run.json
+/Users/sevvalaytekin/Desktop/TcmbKurDonusturucu/TcmbKurDonusturucu.Tests/bin/Debug/net10.0/tsconfig.json
