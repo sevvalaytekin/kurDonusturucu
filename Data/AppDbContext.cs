@@ -12,6 +12,7 @@ namespace TcmbKurDonusturucu.Data
 
         public DbSet<DovizKuru> DovizKurlari { get; set; }
         public DbSet<Kullanici> Kullanicilar { get; set; }
+        public DbSet<Geribildirim> Geribildirimler { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
